@@ -1,7 +1,7 @@
 {
-  "name": "vanilla",
+  "name": "ogo-sdk",
   "version": "1.0.0",
-  "description": "JavaScript example starter project",
+  "description": "SDK Odontogo to interact with APIs.",
   "main": "index.html",
   "scripts": {
     "start": "parcel index.html --open",
