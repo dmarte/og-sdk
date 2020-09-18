@@ -7,6 +7,7 @@
     "start": "parcel index.html --open",
     "build": "parcel build index.html"
   },
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "dependencies": {
     "lodash": "4.17.20"
   },
@@ -14,8 +15,5 @@
     "@babel/core": "7.2.0",
     "parcel-bundler": "^1.6.1"
   },
-  "keywords": [
-    "javascript",
-    "starter"
-  ]
+  "keywords": ["javascript", "starter"]
 }
