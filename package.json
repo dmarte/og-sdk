@@ -1,7 +1,7 @@
 {
-  "name": "@famartech/og-sdk",
+  "name": "ogsdk",
   "version": "1.0.0",
-  "description": "SDK Odontogo to interact with APIs.",
+  "description": "SDK to interact with Ogo APIs.",
   "main": "index.html",
   "scripts": {
     "start": "parcel index.html --open",
@@ -18,5 +18,5 @@
     "@babel/core": "7.2.0",
     "parcel-bundler": "^1.6.1"
   },
-  "keywords": ["javascript", "starter"]
+  "keywords": []
 }
