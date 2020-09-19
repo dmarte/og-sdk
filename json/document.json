@@ -1,6 +1,18 @@
 {
+  "id": 1,
   "document": {
-    "id": 1,
     "type": "SI"
+  },
+  "summary": {
+    "price": 0,
+    "quantity": 0,
+    "amount": 0,
+    "additions": 0,
+    "subtractions": 0,
+    "subtotal": 0,
+    "total": 0,
+    "balance": 0,
+    "paid": 0,
+    "chance": 0
   }
 }
