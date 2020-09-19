@@ -1,5 +1,5 @@
 {
-  "name": "ogo-sdk",
+  "name": "@famartech/og-sdk",
   "version": "1.0.0",
   "description": "SDK Odontogo to interact with APIs.",
   "main": "index.html",
@@ -7,7 +7,10 @@
     "start": "parcel index.html --open",
     "build": "parcel build index.html"
   },
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/famartech/og-sdk.git"
+  },
   "dependencies": {
     "lodash": "4.17.20"
   },
