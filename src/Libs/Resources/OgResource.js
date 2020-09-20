@@ -1,39 +1,39 @@
-import { set, get } from "lodash";
-import OgResourceCast from "./OgResourceCast";
+import { set, get } from 'lodash'
+import OgResourceCast from './OgResourceCast'
 
 const getCastValue = (config, key, casts = {}, value = null) => {
   if (!casts[key]) {
-    return value;
+    return value
   }
 
-  const type = casts[key];
+  const type = casts[key]
 
   if (OgResourceCast.isPrototypeOf(type)) {
-    return new type(config, value);
+    return new type(config, value)
   }
 
-  let output;
+  let output
 
   switch (type) {
-    case "boolean":
-      output = value ? Boolean(value) : false;
-      break;
-    case "string":
-      output = value ? String(value) : "";
-      break;
-    case "integer":
-      output = parseInt(value, 10) || 0;
-      break;
-    case "decimal":
-      output = parseFloat(value) || 0.0;
-      break;
+    case 'boolean':
+      output = value ? Boolean(value) : false
+      break
+    case 'string':
+      output = value ? String(value) : ''
+      break
+    case 'integer':
+      output = parseInt(value, 10) || 0
+      break
+    case 'decimal':
+      output = parseFloat(value) || 0.0
+      break
     default:
-      output = value;
-      break;
+      output = value
+      break
   }
 
-  return output;
-};
+  return output
+}
 
 /**
  * Base class to interact with an entity
@@ -44,13 +44,15 @@ export default class OgResource {
   /**
    * @param {OgApi} api
    * @param {Object} attributes
+   * @param {String} path String path used to fetch to the API.
    */
-  constructor(api, attributes = {}) {
-    this.$api = api;
-    this.$fillable = [];
-    this.$casts = {};
-    this.$attributes = {};
-    this.fill(attributes);
+  constructor(api, attributes = {}, path = '') {
+    this.$api = api
+    this.$fillable = []
+    this.$casts = {}
+    this.$attributes = {}
+    this.$path = path || '/'
+    this.fill(attributes)
   }
 
   /**
@@ -62,9 +64,9 @@ export default class OgResource {
    */
   define(casts = {}) {
     Object.keys(casts).forEach((path) => {
-      this.cast(path, casts[path]);
-    });
-    return this;
+      this.cast(path, casts[path])
+    })
+    return this
   }
 
   /**
@@ -79,9 +81,9 @@ export default class OgResource {
    * @returns {OgResource}
    */
   cast(path, type) {
-    this.$casts[path] = type;
-    this.fillable(path);
-    return this;
+    this.$casts[path] = type
+    this.fillable(path)
+    return this
   }
 
   /**
@@ -92,8 +94,8 @@ export default class OgResource {
    * @returns {OgResource}
    */
   fillable(path) {
-    this.$fillable.push(path);
-    return this;
+    this.$fillable.push(path)
+    return this
   }
 
   /**
@@ -104,44 +106,40 @@ export default class OgResource {
    */
   fill(attributes) {
     this.$fillable.forEach((path) => {
-      const value = get(attributes, path, null);
+      const value = get(attributes, path, null)
       if (!value) {
-        return;
+        return
       }
-      this.set(path, value);
-    });
-    return this;
+      this.set(path, value)
+    })
+    return this
   }
 
   set(path, value) {
     if (!this.$fillable.includes(path)) {
-      return this;
+      return this
     }
     set(
       this.$attributes,
       path,
       getCastValue(this.$api.config, path, this.$casts, value)
-    );
-    return this;
+    )
+    return this
   }
 
   get(path, defaultValue = null) {
-    return get(this.$attributes, path, defaultValue);
+    return get(this.$attributes, path, defaultValue)
   }
 
   get ATTRIBUTES() {
-    return this.$attributes;
+    return this.$attributes
   }
 
   get SCHEMA() {
-    const schema = {};
+    const schema = {}
     Object.keys(this.$casts).forEach((path) => {
-      set(
-        schema,
-        path,
-        getCastValue(this.$api.config, path, this.$casts, null)
-      );
-    });
-    return schema;
+      set(schema, path, getCastValue(this.$api.config, path, this.$casts, null))
+    })
+    return schema
   }
 }
