@@ -23,3 +23,8 @@ it('Fills the config with a set.', () => {
   config.fill({ DEMO: 'John' })
   expect(config.get('DEMO')).toMatch('John')
 })
+
+it('All items', () => {
+  config.fill({ a: 1, b: 1 })
+  expect(config.all()).toMatchObject({ a: 1, b: 1 })
+})

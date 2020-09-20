@@ -89,4 +89,8 @@ export default class OgApi {
   static get HTTP_NO_CONTENT() {
     return 204
   }
+
+  static get HTTP_TOKEN_MISMATCH() {
+    return 419
+  }
 }

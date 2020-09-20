@@ -14,6 +14,10 @@ export default class OgConfig {
     return get(this.$items, path, defaultValue)
   }
 
+  all() {
+    return this.$items
+  }
+
   fill(attributes) {
     if (!isObject(attributes)) {
       return this

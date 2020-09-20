@@ -21,6 +21,7 @@ it('Test headers', () => {
 
 it('Api has HTTP constants', () => {
   expect(Api.HTTP_NO_CONTENT).toEqual(204)
+  expect(Api.HTTP_TOKEN_MISMATCH).toEqual(419)
 })
 
 it('Test URL path', () => {
