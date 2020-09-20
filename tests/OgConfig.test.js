@@ -1,4 +1,4 @@
-import OgConfig from '../src/OgConfig'
+import OgConfig from '../src/Libs/OgConfig'
 
 const config = new OgConfig()
 
@@ -17,4 +17,9 @@ it('Has app settings getters.', () => {
 it('Setters and getters works.', () => {
   config.set('APP_NAME', 'Demo')
   expect(config.get('APP_NAME')).toMatch('Demo')
+})
+
+it('Fills the config with a set.', () => {
+  config.fill({ DEMO: 'John' })
+  expect(config.get('DEMO')).toMatch('John')
 })

@@ -1,19 +1,23 @@
 import OgConfig from '../Libs/OgConfig'
 import OgApi from '../Libs/Http/OgApi'
 import OgAuth from '../Libs/Http/OgAuth'
+import OgUserResource from '~/plugins/sdk/src/Sdk/Resources/OgUserResource'
 
-export default class Odontogo extends OgConfig {
-  constructor() {
+export default class Bootstrap extends OgConfig {
+  constructor(options) {
     super()
     this.set('API_URL', process.env.API_URL)
+    this.set('API_HEADERS', {})
     this.set('AUTH', {
       SESSION_KEY_TOKEN: 'auth.token',
       SESSION_KEY_USER: 'auth.user',
       URL_LOGIN: 'auth/login',
-      URL_USER: 'users/current'
+      URL_USER: 'users/current',
+      USER_RESOURCE: OgUserResource
     })
     this.set('api', new OgApi(this))
     this.set('auth', new OgAuth(this.api))
+    this.fill(options)
   }
 
   /**
@@ -28,6 +32,10 @@ export default class Odontogo extends OgConfig {
    */
   get api() {
     return this.get('api')
+  }
+
+  get AUTH_USER_RESOURCE() {
+    return this.get('AUTH.USER_RESOURCE')
   }
 
   get AUTH_SESSION_KEY_TOKEN() {

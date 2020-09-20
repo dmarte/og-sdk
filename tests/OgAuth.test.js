@@ -1,10 +1,11 @@
 import OgAuth from '../src/Libs/Http/OgAuth'
 import OgApi from '../src/Libs/Http/OgApi'
-import Odontogo from '../src/Sdk/Odontogo'
+import App from '../src/Sdk/Bootstrap'
 import OgUserResource from '../src/Sdk/Resources/OgUserResource'
 import UserJson from '../json/user'
+import OgResource from '~/plugins/sdk/src/Libs/Resources/OgResource'
 
-const config = new Odontogo() // A set of predefined settings
+const config = new App() // A set of predefined settings
 const api = new OgApi(config)
 const auth = new OgAuth(api)
 
@@ -13,6 +14,13 @@ it('[auth] Has paths and urls to make requests.', () => {
   expect(auth.URL_LOGIN).toMatch(config.AUTH_URL_LOGIN)
   expect(auth.PATH_USER).toMatch(config.AUTH_SESSION_KEY_USER)
   expect(auth.PATH_TOKEN).toMatch(config.AUTH_SESSION_KEY_TOKEN)
+  expect(auth.USER_RESOURCE).toEqual(config.AUTH_USER_RESOURCE)
+})
+
+it('[auth] Change resource instance.', () => {
+  expect(auth.USER_RESOURCE).toEqual(OgUserResource)
+  auth.use(OgResource)
+  expect(auth.USER_RESOURCE).toEqual(OgResource)
 })
 
 it('[auth] Set api token through auth', () => {
@@ -58,4 +66,5 @@ it('[auth] Login user.', async () => {
   expect(api.post).toBeCalledTimes(1)
   expect(auth.guest).toBeFalsy()
   expect(auth.$user).toBeInstanceOf(OgUserResource)
+  expect(auth.user).toBeInstanceOf(OgUserResource)
 })

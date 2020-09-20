@@ -27,6 +27,10 @@ export default class OgApi {
     return this
   }
 
+  xMLHttpRequest() {
+    this.header('X-Requested-With', 'XMLHttpRequest')
+  }
+
   token(bearerToken) {
     this.header('Authorization', `Bearer ${bearerToken}`)
     return this
@@ -36,10 +40,10 @@ export default class OgApi {
     const resp = await fetch(this.url(path), {
       method,
       headers: {
-        ...this.config.API_HEADERS,
+        ...this.config.get('API_HEADERS', {}),
         ...headers
       },
-      body: JSON.stringify(data)
+      body: ['GET', 'HEAD'].includes(method) ? undefined : JSON.stringify(data)
     })
 
     if (resp.ok) {
@@ -48,7 +52,7 @@ export default class OgApi {
         ...{
           ok: true,
           message: resp.statusText,
-          data: await resp.json()
+          data: resp.status !== OgApi.HTTP_NO_CONTENT ? await resp.json() : {}
         }
       }
     } else {
@@ -66,16 +70,23 @@ export default class OgApi {
     return this.$response.data
   }
 
-  async get(path, query) {
+  async get(path, query = {}) {
     await this.request(path, query, 'GET')
     return this.$response.data
   }
 
-  url(path) {
-    return [this.config.API_URL, path].join('/')
+  url(path = '') {
+    return [
+      String(this.config.get('API_URL')).replace(/\/$/g, ''),
+      String(path).replace(/^\//g, '')
+    ].join('/')
   }
 
   get config() {
     return this.$config
+  }
+
+  static get HTTP_NO_CONTENT() {
+    return 204
   }
 }

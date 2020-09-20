@@ -1,4 +1,4 @@
-import { set, get } from 'lodash'
+import { set, get, isObject } from 'lodash'
 
 export default class OgConfig {
   constructor() {
@@ -12,5 +12,15 @@ export default class OgConfig {
 
   get(path, defaultValue = null) {
     return get(this.$items, path, defaultValue)
+  }
+
+  fill(attributes) {
+    if (!isObject(attributes)) {
+      return this
+    }
+    Object.keys(attributes).forEach((path) => {
+      this.set(path, attributes[path])
+    })
+    return this
   }
 }

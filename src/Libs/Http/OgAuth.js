@@ -48,7 +48,7 @@ export default class OgAuth extends OgSessionStorage {
     const { token } = response
     this.set(this.PATH_TOKEN, token)
     this.token(token)
-    await this.user()
+    await this.fetchUser()
     return this
   }
 
@@ -58,7 +58,7 @@ export default class OgAuth extends OgSessionStorage {
    *
    * @returns {Promise<OgUserResource>}
    */
-  async user() {
+  async fetchUser() {
     if (this.$user instanceof OgUserResource) {
       return this.$user
     }
@@ -101,8 +101,36 @@ export default class OgAuth extends OgSessionStorage {
     return this
   }
 
+  /**
+   *  This method let you change
+   *  the default user resource used by the
+   *  auth provider.
+   *
+   * @param {OgResource} resource
+   * @returns {OgAuth}
+   */
+  use(resource) {
+    this.set('AUTH.USER_RESOURCE', resource)
+    return this
+  }
+
+  /**
+   * Get current authenticated user
+   * or empty user instance.
+   *
+   * @returns {OgUserResource|OgResource}
+   */
+  get user() {
+    const Resource = this.USER_RESOURCE
+    return this.$user || new Resource(this.$api)
+  }
+
   get guest() {
     return !this.get(this.PATH_USER) || !this.get(this.PATH_TOKEN)
+  }
+
+  get USER_RESOURCE() {
+    return this.$api.config.get('AUTH.USER_RESOURCE', OgUserResource)
   }
 
   get URL_LOGIN() {

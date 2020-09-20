@@ -1,7 +1,7 @@
-import Odontogo from './Sdk/Odontogo'
+import App from './Sdk/Odontogo'
 
 export default {
   install(vue) {
-    vue.prototype.$ogo = new Odontogo()
+    vue.prototype.$og = new App()
   }
 }
