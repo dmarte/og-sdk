@@ -1,4 +1,6 @@
 import OgConfig from '../Libs/OgConfig'
+import OgApi from '../Libs/Http/OgApi'
+import OgAuth from '../Libs/Http/OgAuth'
 
 export default class Odontogo extends OgConfig {
   constructor() {
@@ -10,6 +12,22 @@ export default class Odontogo extends OgConfig {
       URL_LOGIN: 'auth/login',
       URL_USER: 'users/current'
     })
+    this.set('api', new OgApi(this))
+    this.set('auth', new OgAuth(this.api))
+  }
+
+  /**
+   * @returns {OgAuth}
+   */
+  get auth() {
+    return this.get('auth')
+  }
+
+  /**
+   * @returns {OgApi}
+   */
+  get api() {
+    return this.get('api')
   }
 
   get AUTH_SESSION_KEY_TOKEN() {
