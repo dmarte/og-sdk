@@ -110,7 +110,7 @@ export default class OgAuth extends OgSessionStorage {
    * @returns {OgAuth}
    */
   use(resource) {
-    this.set('AUTH.USER_RESOURCE', resource)
+    this.set('AUTH_USER_RESOURCE', resource)
     return this
   }
 
@@ -125,27 +125,30 @@ export default class OgAuth extends OgSessionStorage {
     return this.$user || new Resource(this.$api)
   }
 
+  /**
+   * @returns {boolean}
+   */
   get guest() {
     return !this.get(this.PATH_USER) || !this.get(this.PATH_TOKEN)
   }
 
   get USER_RESOURCE() {
-    return this.$api.config.get('AUTH.USER_RESOURCE', OgUserResource)
+    return this.$api.config.get('AUTH_USER_RESOURCE', OgUserResource)
   }
 
   get URL_LOGIN() {
-    return this.$api.config.get('AUTH.URL_LOGIN')
+    return this.$api.config.get('AUTH_API_PATH_LOGIN')
   }
 
   get URL_USER() {
-    return this.$api.config.get('AUTH.URL_USER')
+    return this.$api.config.get('AUTH_API_PATH_USER')
   }
 
   get PATH_TOKEN() {
-    return this.$api.config.get('AUTH.SESSION_KEY_TOKEN')
+    return this.$api.config.get('AUTH_SESSION_KEY_TOKEN')
   }
 
   get PATH_USER() {
-    return this.$api.config.get('AUTH.SESSION_KEY_USER')
+    return this.$api.config.get('AUTH_SESSION_KEY_USER')
   }
 }

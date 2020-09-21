@@ -1,24 +1,24 @@
 import OgConfig from '../Libs/OgConfig'
 import OgApi from '../Libs/Http/OgApi'
 import OgAuth from '../Libs/Http/OgAuth'
-import OgUserResource from '~/plugins/sdk/src/Sdk/Resources/OgUserResource'
+import OgUserResource from '../Sdk/Resources/OgUserResource'
 
 export default class Bootstrap extends OgConfig {
   constructor(options) {
     super()
     // URL base to make API requests.
-    this.set('API_URL', process.env.API_URL)
+    this.set('API_URL', process.env.OG_SDK_URL_API)
     // Headers must be included with every request.
     this.set('API_HEADERS', {})
     // Determine whether or not to include credentials.
     this.set('API_CREDENTIALS', false)
-    this.set('AUTH', {
-      SESSION_KEY_TOKEN: 'auth.token',
-      SESSION_KEY_USER: 'auth.user',
-      URL_LOGIN: 'auth/login',
-      URL_USER: 'users/current',
-      USER_RESOURCE: OgUserResource
-    })
+    // OgAuth module
+    this.set('AUTH_API_PATH_LOGIN', 'login')
+    this.set('AUTH_API_PATH_USER', 'users/current')
+    this.set('AUTH_USER_RESOURCE', OgUserResource)
+    this.set('AUTH_SESSION_KEY_TOKEN', 'auth.token')
+    this.set('AUTH_SESSION_KEY_USER', 'auth.user')
+    // Accessors
     this.set('api', new OgApi(this))
     this.set('auth', new OgAuth(this.api))
     this.fill(options)

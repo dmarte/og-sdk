@@ -1,4 +1,5 @@
 import OgConfig from '../OgConfig'
+import OgCookie from './OgCookie'
 
 export default class OgApi {
   constructor(config = new OgConfig()) {
@@ -34,6 +35,20 @@ export default class OgApi {
 
   withCredentials() {
     this.config.set('API_CREDENTIALS', true)
+    return this
+  }
+
+  withXSRFHeader(token) {
+    this.header('X-XSRF-TOKEN', token)
+    return this
+  }
+
+  withCookeXSRFHeader() {
+    const cookie = new OgCookie()
+    if (!cookie.has('XSRF-TOKEN')) {
+      return this
+    }
+    this.withXSRFHeader(cookie.get('XSRF-TOKEN'))
     return this
   }
 
@@ -92,20 +107,25 @@ export default class OgApi {
     }
 
     const init = {
-      // mode: 'cors',
+      mode: 'cors',
       method: args.method || 'GET',
-      headers: {
-        ...this.config.get('API_HEADERS', {}),
-        ...(args.headers || {})
-      }
+      headers: {}
     }
     if (!['GET', 'HEAD'].includes(init.method) && args.data) {
       init.body = JSON.stringify(args.data)
     }
 
-    // if (this.config.get('API_CREDENTIALS')) {
-    //   init.credentials = 'include'
-    // }
+    if (this.config.get('API_CREDENTIALS')) {
+      init.credentials = 'include'
+    }
+
+    this.withCookeXSRFHeader()
+
+    init.headers = {
+      ...this.config.get('API_HEADERS', {}),
+      ...this.$headers,
+      ...(args.headers || {})
+    }
 
     return init
   }
