@@ -92,6 +92,7 @@ export default class OgApi {
     }
 
     const init = {
+      // mode: 'cors',
       method: args.method || 'GET',
       headers: {
         ...this.config.get('API_HEADERS', {}),
@@ -102,9 +103,9 @@ export default class OgApi {
       init.body = JSON.stringify(args.data)
     }
 
-    if (this.get('API_CREDENTIALS')) {
-      init.credentials = 'include'
-    }
+    // if (this.config.get('API_CREDENTIALS')) {
+    //   init.credentials = 'include'
+    // }
 
     return init
   }

@@ -1,0 +1,29 @@
+{
+  "name": "@famartech/og-sdk",
+  "version": "1.0.0",
+  "description": "A set of libraries to interact with APIS.",
+  "main": "src/index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/famartech/og-sdk.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/famartech"
+  },
+  "keywords": [
+    "api",
+    "sdk"
+  ],
+  "author": "Delvi Marte <dmarte@famartech.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/famartech/og-sdk/issues"
+  },
+  "homepage": "https://github.com/famartech/og-sdk#readme"
+}
