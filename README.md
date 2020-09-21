@@ -1,3 +1,3 @@
 # og-sdk
 
-This is an SDK created to interact with APIs in a simplest form.
+This SDK set of libraries could be used to interact with APIS.
