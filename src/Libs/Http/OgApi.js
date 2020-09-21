@@ -29,6 +29,12 @@ export default class OgApi {
 
   xMLHttpRequest() {
     this.header('X-Requested-With', 'XMLHttpRequest')
+    return this
+  }
+
+  withCredentials() {
+    this.config.set('API_CREDENTIALS', true)
+    return this
   }
 
   token(bearerToken) {
@@ -37,14 +43,8 @@ export default class OgApi {
   }
 
   async request(path, data = {}, method = 'GET', headers = {}) {
-    const resp = await fetch(this.url(path), {
-      method,
-      headers: {
-        ...this.config.get('API_HEADERS', {}),
-        ...headers
-      },
-      body: ['GET', 'HEAD'].includes(method) ? undefined : JSON.stringify(data)
-    })
+    const url = this.url(path)
+    const resp = await fetch(url, this.settings({ data, method, headers }))
 
     if (resp.ok) {
       this.$response = {
@@ -84,6 +84,29 @@ export default class OgApi {
 
   get config() {
     return this.$config
+  }
+
+  settings(args) {
+    if (!args) {
+      args = {}
+    }
+
+    const init = {
+      method: args.method || 'GET',
+      headers: {
+        ...this.config.get('API_HEADERS', {}),
+        ...(args.headers || {})
+      }
+    }
+    if (!['GET', 'HEAD'].includes(init.method) && args.data) {
+      init.body = JSON.stringify(args.data)
+    }
+
+    if (this.get('API_CREDENTIALS')) {
+      init.credentials = 'include'
+    }
+
+    return init
   }
 
   static get HTTP_NO_CONTENT() {

@@ -35,3 +35,10 @@ it('Test get request', async () => {
   const data = await api.get('json/document.json')
   expect(data).toEqual(DocumentJson)
 })
+
+it('Test with credentials settings.', () => {
+  expect(api.config.get('API_CREDENTIALS')).toBeFalsy()
+  api.withCredentials()
+  expect(api.config.get('API_CREDENTIALS')).toBeTruthy()
+  expect(api.settings().credentials).toMatch('include')
+})

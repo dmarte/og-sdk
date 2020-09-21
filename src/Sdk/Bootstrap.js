@@ -6,8 +6,12 @@ import OgUserResource from '~/plugins/sdk/src/Sdk/Resources/OgUserResource'
 export default class Bootstrap extends OgConfig {
   constructor(options) {
     super()
+    // URL base to make API requests.
     this.set('API_URL', process.env.API_URL)
+    // Headers must be included with every request.
     this.set('API_HEADERS', {})
+    // Determine whether or not to include credentials.
+    this.set('API_CREDENTIALS', false)
     this.set('AUTH', {
       SESSION_KEY_TOKEN: 'auth.token',
       SESSION_KEY_USER: 'auth.user',
