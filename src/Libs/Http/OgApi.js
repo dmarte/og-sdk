@@ -1,16 +1,15 @@
-import OgConfig from '../OgConfig'
 import OgCookie from './OgCookie'
+import OgResponse from '~/Bxpert/Sdk/src/Libs/Http/OgResponse'
+import Bootstrap from '~/Bxpert/Sdk/src/Sdk/Bootstrap'
 
 export default class OgApi {
-  constructor(config = new OgConfig()) {
+  /**
+   * @param {Bootstrap} config
+   */
+  constructor(config = new Bootstrap()) {
     this.$config = config
     this.$headers = {}
-    this.$response = {
-      ok: true,
-      message: '',
-      status: 200,
-      data: {}
-    }
+    this.$response = new OgResponse(config)
   }
 
   header(key, value) {
@@ -58,36 +57,28 @@ export default class OgApi {
   }
 
   async request(path, data = {}, method = 'GET', headers = {}) {
+    this.$response.clear()
     const url = this.url(path)
     const resp = await fetch(url, this.settings({ data, method, headers }))
-
-    if (resp.ok) {
-      this.$response = {
-        ...this.$response,
-        ...{
-          ok: true,
-          message: resp.statusText,
-          data: resp.status !== OgApi.HTTP_NO_CONTENT ? await resp.json() : {}
-        }
-      }
-    } else {
-      this.$response.ok = false
-      this.$response.message = resp.statusText
-      this.$response.status = resp.status
-      this.$response.data = {}
+    let responseData = {}
+    if (OgResponse.HTTP_NO_CONTENT !== resp.status) {
+      responseData = await resp.json()
     }
-
-    return this
+    this.$response = new OgResponse(
+      this.$config,
+      responseData,
+      resp.status,
+      resp.statusText
+    )
+    return this.$response
   }
 
   async post(path, data) {
-    await this.request(path, data, 'POST')
-    return this.$response.data
+    return await this.request(path, data, 'POST')
   }
 
   async get(path, query = {}) {
-    await this.request(path, query, 'GET')
-    return this.$response.data
+    return await this.request(path, query, 'GET')
   }
 
   url(path = '') {
@@ -99,6 +90,10 @@ export default class OgApi {
 
   get config() {
     return this.$config
+  }
+
+  get response() {
+    return this.$response
   }
 
   settings(args) {
@@ -128,13 +123,5 @@ export default class OgApi {
     }
 
     return init
-  }
-
-  static get HTTP_NO_CONTENT() {
-    return 204
-  }
-
-  static get HTTP_TOKEN_MISMATCH() {
-    return 419
   }
 }

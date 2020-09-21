@@ -1,6 +1,7 @@
+import { isFunction } from 'lodash'
 import OgSessionStorage from '../OgSessionStorage'
 import OgUserResource from '../../Sdk/Resources/OgUserResource'
-
+import OgResponse from './OgResponse.js'
 /**
  * @property {OgApi} $api
  */
@@ -12,6 +13,7 @@ export default class OgAuth extends OgSessionStorage {
     super()
     this.$api = api
     this.$user = null
+    this.$response = new OgResponse(api.config)
     this.setTokenFromSession()
     this.setUserFromSession()
   }
@@ -38,14 +40,11 @@ export default class OgAuth extends OgSessionStorage {
    * @returns {Promise<OgAuth>}
    */
   async login(email, password) {
-    const response = await this.$api.post(this.URL_LOGIN, { email, password })
-    if (!response || !response.token) {
-      throw new Error(
-        `ERROR ${this.$api.$response.status}: Unable to get the token from the server.`,
-        this.$api.$response.status
-      )
+    this.$response = await this.$api.post(this.URL_LOGIN, { email, password })
+    if (this.$response.failed) {
+      throw new Error(this.$response.message)
     }
-    const { token } = response
+    const { token } = this.$response.data
     this.set(this.PATH_TOKEN, token)
     this.token(token)
     await this.fetchUser()
@@ -68,15 +67,15 @@ export default class OgAuth extends OgSessionStorage {
       return this.$user
     }
 
-    const user = await this.$api.get(this.URL_USER)
+    this.$response = await this.$api.get(this.URL_USER)
 
-    if (!this.$api.$response.ok) {
-      throw this.$api.$response.message
+    if (this.$response.failed) {
+      throw new Error(this.$response.message)
     }
 
-    this.set(this.PATH_USER, user)
+    this.set(this.PATH_USER, this.$response.data)
 
-    this.$user = new OgUserResource(this.$api, user)
+    this.$user = new OgUserResource(this.$api, this.$response.data)
 
     return this.$user
   }
@@ -121,8 +120,20 @@ export default class OgAuth extends OgSessionStorage {
    * @returns {OgUserResource|OgResource}
    */
   get user() {
-    const Resource = this.USER_RESOURCE
-    return this.$user || new Resource(this.$api)
+    const Resource = this.USER_RESOURCE || OgUserResource
+
+    if (this.$user) {
+      return this.$user
+    }
+    if (!isFunction(Resource)) {
+      return new OgUserResource()
+    }
+
+    return new Resource(this.$api)
+  }
+
+  get response() {
+    return this.$response
   }
 
   /**
