@@ -1,5 +1,7 @@
 import { set, get, isObject } from 'lodash'
 import OgResourceCast from './OgResourceCast'
+import OgPagination from '~/Bxpert/Sdk/src/Libs/OgPagination'
+import OgQueryBuilder from '~/Bxpert/Sdk/src/Libs/Http/OgQueryBuilder'
 
 const getCastValue = (config, key, casts = {}, value = null) => {
   if (!casts[key]) {
@@ -40,13 +42,14 @@ const getCastValue = (config, key, casts = {}, value = null) => {
  * on the API.
  * @author Delvi Marte <dmarte@famartech.com>
  */
-export default class OgResource {
+export default class OgResource extends OgQueryBuilder {
   /**
    * @param {OgApi} api
    * @param {Object} attributes
    * @param {String} path String path used to fetch to the API.
    */
   constructor(api, attributes = {}, path = '') {
+    super(api.config)
     this.$api = api
     this.$fillable = []
     this.$casts = {}

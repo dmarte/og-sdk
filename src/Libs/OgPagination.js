@@ -3,7 +3,7 @@ export default class OgPagination {
    * @param {Bootstrap} config
    * @param {Object} attributes
    */
-  constructor(config, attributes) {
+  constructor(config, attributes = {}) {
     this.$config = config
     this.$meta = {
       perPage: this.PER_PAGE,
@@ -13,6 +13,7 @@ export default class OgPagination {
       to: 0,
       total: 0
     }
+    this.fill(attributes)
   }
 
   fill(meta) {

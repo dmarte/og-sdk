@@ -1,12 +1,14 @@
-import OgPagination from '~/Bxpert/Sdk/src/Libs/OgPagination'
+import OgPagination from '../OgPagination'
+import OgQueryBuilder from './OgQueryBuilder'
 
-export default class OgCollection {
+export default class OgCollection extends OgQueryBuilder {
   /**
    * @param {OgApi} api
    * @param {OgResource} collector
    * @param {String} path
    */
   constructor(api, collector, path = '/') {
+    super(api.config)
     this.$elements = []
     this.$collector = collector
     this.$paginate = new OgPagination(api)
@@ -19,9 +21,8 @@ export default class OgCollection {
     this.$paginate.perPage = perPage
     this.$paginate.currentPage = page
     this.$loading = true
-    const response = await this.$api.get(this.$path, {
-      ...this.$paginate.toServer()
-    })
+    this.wherePagination(this.$paginate)
+    const response = await this.$api.get(this.$path, super.toJSON())
     if (response.meta) {
       this.$paginate.fill(response.meta)
     }
