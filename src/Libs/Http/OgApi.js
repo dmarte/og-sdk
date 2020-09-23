@@ -10,6 +10,7 @@ export default class OgApi {
     this.$config = config
     this.$headers = {}
     this.$response = new OgResponse(config)
+    this.$abort = new AbortController()
   }
 
   header(key, value) {
@@ -107,6 +108,15 @@ export default class OgApi {
     return this.$response
   }
 
+  get signal() {
+    return this.$abort
+  }
+
+  abort() {
+    this.$abort.abort()
+    return this
+  }
+
   settings(args) {
     if (!args) {
       args = {}
@@ -115,7 +125,8 @@ export default class OgApi {
     const init = {
       mode: 'cors',
       method: args.method || 'GET',
-      headers: {}
+      headers: {},
+      signal: this.$abort.signal
     }
     if (!['GET', 'HEAD'].includes(init.method) && args.data) {
       init.body = JSON.stringify(args.data)
