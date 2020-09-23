@@ -72,7 +72,7 @@ export default class OgResponse {
     if (!this.fail(field)) {
       return null
     }
-    return this.$feedbacks[field] || ''
+    return this.resolveResponseValidationKey(field).message || ''
   }
 
   clear() {
@@ -83,8 +83,39 @@ export default class OgResponse {
     return this
   }
 
+  resolveResponseValidationKey(field) {
+    if (!this.fail(field)) {
+      return { attribute: null, rule: null, value: null, message: null }
+    }
+    const key = this.$feedbacks[field]
+    // Get the rules
+    const rules = String(key)
+      .replace('validation.', '')
+      .split(',')
+    let rule = rules.shift()
+    // Any other value should be values separated by /
+    const value = String(rules.shift())
+      .split('/')
+      .map((value) => {
+        return this.$config.locale.exists(`attributes.${value.trim()}`)
+          ? this.$config.locale.trans(`attributes.${value.trim()}`)
+          : value
+      })
+      .join(', ')
+    const attribute = this.$config.locale.exists(`attributes.${field}`)
+      ? this.$config.locale.trans(`attributes.${field}`)
+      : field
+    rule = this.$config.locale.exists(`validation.${rule}`)
+      ? this.$config.locale.trans(`validation.${rule}`)
+      : rule
+    const message = rule
+    return { attribute, message, value: value || '' }
+  }
+
   get message() {
-    this.$message = parseMessageFromData(this.$data, this.$message)
+    this.$message = this.$config.locale.trans(
+      parseMessageFromData(this.$data, this.$message)
+    )
     return this.$message
   }
 

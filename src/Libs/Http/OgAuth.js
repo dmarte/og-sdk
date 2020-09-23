@@ -2,6 +2,7 @@ import { isFunction } from 'lodash'
 import OgSessionStorage from '../OgSessionStorage'
 import OgUserResource from '../../Sdk/Resources/OgUserResource'
 import OgResponse from './OgResponse.js'
+import OgCookie from './OgCookie'
 /**
  * @property {OgApi} $api
  */
@@ -14,6 +15,7 @@ export default class OgAuth extends OgSessionStorage {
     this.$api = api
     this.$user = null
     this.$response = new OgResponse(api.config)
+    this.$cookie = new OgCookie()
     this.setTokenFromSession()
     this.setUserFromSession()
   }
@@ -27,8 +29,24 @@ export default class OgAuth extends OgSessionStorage {
 
   setUserFromSession() {
     if (this.has(this.PATH_USER)) {
-      this.$user = new OgUserResource(this.$api, this.get(this.PATH_USER))
+      this.$user = new this.USER_RESOURCE(this.$api, this.get(this.PATH_USER))
     }
+    return this
+  }
+
+  async loginWithSanctum(email, password) {
+    await this.logout()
+    // Get the cookie
+    await this.$api.get('/sanctum/csrf-cookie')
+
+    this.$api.withCredentials()
+    this.$api.withCookeXSRFHeader()
+
+    this.$response = await this.$api.post(this.URL_LOGIN, { email, password })
+    if (this.$response.failed) {
+      throw new Error(this.$response.message)
+    }
+    await this.fetchUser()
     return this
   }
 
@@ -95,6 +113,7 @@ export default class OgAuth extends OgSessionStorage {
 
   logout() {
     this.clear()
+    this.$cookie.clear()
     this.$user = null
     delete this.$api.$headers.Authorization
     return this
@@ -140,7 +159,11 @@ export default class OgAuth extends OgSessionStorage {
    * @returns {boolean}
    */
   get guest() {
-    return !this.get(this.PATH_USER) || !this.get(this.PATH_TOKEN)
+    if (this.get(this.PATH_USER)) {
+      return false
+    }
+
+    return !this.get(this.PATH_TOKEN)
   }
 
   get USER_RESOURCE() {

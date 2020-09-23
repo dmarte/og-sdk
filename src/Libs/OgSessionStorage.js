@@ -1,4 +1,3 @@
-import { get } from 'lodash'
 import OgConfig from './OgConfig'
 
 export default class OgSessionStorage extends OgConfig {
@@ -39,9 +38,10 @@ export default class OgSessionStorage extends OgConfig {
 
   has(path) {
     if (this.SUPPORTED) {
-      return !!this.engine.getItem(path)
+      const value = this.engine.getItem(path)
+      return value === 'undefined' ? false : !!value
     }
-    return get(this.$items, path) === null
+    return false
   }
 
   get engine() {

@@ -1,4 +1,4 @@
-import { set, get } from 'lodash'
+import { set, get, isObject } from 'lodash'
 import OgResourceCast from './OgResourceCast'
 
 const getCastValue = (config, key, casts = {}, value = null) => {
@@ -8,7 +8,7 @@ const getCastValue = (config, key, casts = {}, value = null) => {
 
   const type = casts[key]
 
-  if (OgResourceCast.isPrototypeOf(type)) {
+  if (OgResourceCast.isPrototypeOf(type) || OgResource.isPrototypeOf(type)) {
     return new type(config, value)
   }
 
@@ -128,7 +128,36 @@ export default class OgResource {
   }
 
   get(path, defaultValue = null) {
-    return get(this.$attributes, path, defaultValue)
+    const value = get(this.$attributes, path, defaultValue)
+    if (!value) {
+      const schema = this.SCHEMA
+      return get(schema, path, defaultValue)
+    }
+    return value
+  }
+
+  /**
+   * Determine whether or not a given path
+   * has a value.
+   *
+   * NOTE:
+   * A path with a value NULL is considered
+   * not filled.
+   *
+   * @param {String} path
+   * @returns {boolean}
+   */
+  filled(path) {
+    return get(this.$attributes, path, null) !== null
+  }
+
+  toJSON() {
+    const out = {}
+    Object.keys(this.$casts).forEach((path) => {
+      set(out, path, this.get(path))
+    })
+
+    return out
   }
 
   get ATTRIBUTES() {
@@ -139,6 +168,10 @@ export default class OgResource {
     const schema = {}
     Object.keys(this.$casts).forEach((path) => {
       set(schema, path, getCastValue(this.$api.config, path, this.$casts, null))
+      const value = get(schema, path)
+      if (isObject(value) && value instanceof OgResource) {
+        set(schema, path, value.SCHEMA)
+      }
     })
     return schema
   }

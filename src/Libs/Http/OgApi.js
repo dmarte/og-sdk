@@ -56,9 +56,20 @@ export default class OgApi {
     return this
   }
 
+  query(data) {
+    const params = new URLSearchParams()
+    Object.keys(data).forEach((key) => params.set(key, data[key]))
+    return params
+  }
+
   async request(path, data = {}, method = 'GET', headers = {}) {
     this.$response.clear()
-    const url = this.url(path)
+    const url = new URL(this.url(path))
+
+    if (method === 'GET') {
+      url.search = this.query(data)
+    }
+
     const resp = await fetch(url, this.settings({ data, method, headers }))
     let responseData = {}
     if (OgResponse.HTTP_NO_CONTENT !== resp.status) {

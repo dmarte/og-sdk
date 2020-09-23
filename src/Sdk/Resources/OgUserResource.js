@@ -18,6 +18,16 @@ export default class OgUserResource extends OgResource {
     this.fill(attributes)
   }
 
+  get username() {
+    if (this.filled('username')) {
+      return this.get('username')
+    }
+
+    const email = this.get('email', 'Username')
+
+    return email.substring(0, email.lastIndexOf('@')).replace(/\W/, '')
+  }
+
   get id() {
     return this.get('id')
   }
@@ -27,7 +37,7 @@ export default class OgUserResource extends OgResource {
   }
 
   get email() {
-    this.get('email')
+    return this.get('email')
   }
 
   set email(value) {
