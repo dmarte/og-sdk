@@ -92,24 +92,38 @@ export default class OgResponse {
     const rules = String(key)
       .replace('validation.', '')
       .split(',')
-    let rule = rules.shift()
+    const rule = rules.shift()
+    const { locale } = this.$config
     // Any other value should be values separated by /
-    const value = String(rules.shift())
-      .split('/')
+    const value = rules
       .map((value) => {
-        return this.$config.locale.exists(`attributes.${value.trim()}`)
-          ? this.$config.locale.trans(`attributes.${value.trim()}`)
-          : value
+        const val = value.trim()
+        if (locale.exists(`attributes.${val}`)) {
+          return locale.trans(`attributes.${val}`)
+        }
+        if (locale.exists(`values.${field}.${val}`)) {
+          return locale.trans(`values.${field}.${val}`)
+        }
+        if (locale.exists(`attributes.${field}.${val}`)) {
+          return locale.trans(`attributes.${field}.${val}`)
+        }
+
+        return val
       })
       .join(', ')
-    const attribute = this.$config.locale.exists(`attributes.${field}`)
-      ? this.$config.locale.trans(`attributes.${field}`)
-      : field
-    rule = this.$config.locale.exists(`validation.${rule}`)
-      ? this.$config.locale.trans(`validation.${rule}`)
-      : rule
-    const message = rule
-    return { attribute, message, value: value || '' }
+    const attribute = this.$config.locale.trans(
+      `attributes.${field}`,
+      {},
+      field
+    )
+    const message = this.$config.locale.trans(
+      `validation.${rule}`,
+      {
+        value
+      },
+      rule
+    )
+    return { attribute, message, value: value || '', rule }
   }
 
   get message() {

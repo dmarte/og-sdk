@@ -1,7 +1,7 @@
 import { set, get, isObject } from 'lodash'
 import OgResourceCast from './OgResourceCast'
-import OgPagination from '~/Bxpert/Sdk/src/Libs/OgPagination'
 import OgQueryBuilder from '~/Bxpert/Sdk/src/Libs/Http/OgQueryBuilder'
+import OgResponse from '~/Bxpert/Sdk/src/Libs/Http/OgResponse'
 
 const getCastValue = (config, key, casts = {}, value = null) => {
   if (!casts[key]) {
@@ -51,11 +51,65 @@ export default class OgResource extends OgQueryBuilder {
   constructor(api, attributes = {}, path = '') {
     super(api.config)
     this.$api = api
+    this.$response = new OgResponse(api.config)
     this.$fillable = []
     this.$casts = {}
     this.$attributes = {}
+    this.$primaryKey = 'id'
+    this.$status = {
+      updating: false,
+      fetching: false,
+      creating: false,
+      deleting: false
+    }
     this.$path = path || '/'
     this.fill(attributes)
+  }
+
+  fail(path) {
+    return this.$response.fail(path)
+  }
+
+  state(path) {
+    return this.$response.state(path)
+  }
+
+  feedback(path) {
+    return this.$response.feedback(path)
+  }
+
+  _statusReset() {
+    this.$status.creating = false
+    this.$status.updating = false
+    this.$status.deleting = false
+    this.$status.fetching = false
+    return this
+  }
+
+  reset() {
+    this.$attributes = this.toJSON()
+  }
+
+  abort() {
+    this.$api.abort()
+    this._statusReset()
+    this.$response.clear()
+    this.reset()
+  }
+
+  async save() {
+    this.$api.abort()
+    this._statusReset()
+    this.$response.clear()
+    this.$status.creating = true
+    this.$response = await this.$api.post(this.$path, this.toJSON())
+    if (this.$response.failed) {
+      this._statusReset()
+      throw new Error(this.$response.message)
+    }
+    this.fill(this.$response.data)
+    this.$status.creating = false
+    return this
   }
 
   /**
@@ -69,6 +123,7 @@ export default class OgResource extends OgQueryBuilder {
     Object.keys(casts).forEach((path) => {
       this.cast(path, casts[path])
     })
+    this.$attributes = this.toJSON()
     return this
   }
 
@@ -161,6 +216,42 @@ export default class OgResource extends OgQueryBuilder {
     })
 
     return out
+  }
+
+  get FAILED_BY_SESSION_EXPIRE() {
+    return this.$response.status === OgResponse.HTTP_TOKEN_MISMATCH
+  }
+
+  get FAILED_MESSAGE() {
+    return this.$response.message
+  }
+
+  get FAILED_CODE() {
+    return this.$response.status
+  }
+
+  get FAILED() {
+    return this.$response.failed
+  }
+
+  get IS_SAVING() {
+    return this.$status.creating || this.$status.updating || false
+  }
+
+  get IS_CREATING() {
+    return this.$status.creating
+  }
+
+  get IS_UPDATING() {
+    return this.$status.updating
+  }
+
+  get IS_FETCHING() {
+    return this.$status.fetching
+  }
+
+  get IS_DELETING() {
+    return this.$status.deleting
   }
 
   get ATTRIBUTES() {

@@ -17,6 +17,8 @@ export default class Bootstrap extends OgConfig {
     this.set('API_HEADERS', {})
     // Determine whether or not to include credentials.
     this.set('API_CREDENTIALS', false)
+    // Countries allowed
+    this.set('ALLOWED_COUNTRIES', ['US', 'DO'])
     // OgAuth module
     this.set('AUTH_API_PATH_LOGIN', 'login')
     this.set('AUTH_API_PATH_USER', 'users/current')
@@ -51,6 +53,13 @@ export default class Bootstrap extends OgConfig {
    */
   get locale() {
     return this.get('locale')
+  }
+
+  get DROPDOWN_COUNTRIES_DATA() {
+    return this.get('ALLOWED_COUNTRIES', []).map((value) =>({
+      value,
+      text: this.locale.trans(`countries.${value}`)
+    }))
   }
 
   get COLLECTION_PER_PAGE() {

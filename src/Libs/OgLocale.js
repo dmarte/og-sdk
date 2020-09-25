@@ -8,9 +8,9 @@ export default class OgLocale {
     this.$i18n = i18n
   }
 
-  trans(path, placeholders = {}) {
+  trans(path, placeholders = {}, defaultValue = null) {
     if (!this.exists(path)) {
-      return path
+      return defaultValue || path
     }
 
     return this.$i18n.t(path, placeholders)
