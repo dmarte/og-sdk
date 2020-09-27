@@ -14,6 +14,13 @@ export default class OgQueryBuilder {
   }
 
   /**
+   * @returns {OgQueryBuilder}
+   */
+  newQuery() {
+    return new OgQueryBuilder(this.$config)
+  }
+
+  /**
    * Reverse of queryStringToDotNotation
    * @param path
    * @returns {String}
@@ -47,7 +54,7 @@ export default class OgQueryBuilder {
   /**
    * Set a given key into the query string path.
    * @param {String} path
-   * @param {String} value
+   * @param {String|Number|Boolean} value
    * @returns {OgQueryBuilder}
    */
   where(path, value) {

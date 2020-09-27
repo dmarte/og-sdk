@@ -32,6 +32,8 @@ export default class Bootstrap extends OgConfig {
     this.set('api', new OgApi(this))
     this.set('auth', new OgAuth(this.api))
     this.set('locale', new OgLocale(this, vue.i18n))
+    this.set('router', vue.$router)
+    this.set('app', vue)
   }
 
   /**
@@ -55,8 +57,23 @@ export default class Bootstrap extends OgConfig {
     return this.get('locale')
   }
 
+  /**
+   * Vue Router
+   * @returns {Vue.$router}
+   */
+  get router() {
+    return this.get('router')
+  }
+
+  /**
+   * @returns {Vue}
+   */
+  get vue() {
+    return this.get('app')
+  }
+
   get DROPDOWN_COUNTRIES_DATA() {
-    return this.get('ALLOWED_COUNTRIES', []).map((value) =>({
+    return this.get('ALLOWED_COUNTRIES', []).map((value) => ({
       value,
       text: this.locale.trans(`countries.${value}`)
     }))

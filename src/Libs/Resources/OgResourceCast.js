@@ -21,6 +21,10 @@ export default class OgResourceCast {
     return this.$value
   }
 
+  get IS_OBJECT() {
+    return _.isObject(this.$value)
+  }
+
   get IS_STRING() {
     return _.isString(this.$value)
   }

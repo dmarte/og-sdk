@@ -13,11 +13,30 @@ export default class OgCollection extends OgQueryBuilder {
     this.$collector = collector
     this.$paginate = new OgPagination(api)
     this.$loading = false
+    this.$asDropdown = true
     this.$api = api
     this.$path = path
   }
 
+  async dropdown(key = 'dropdown') {
+    this.$asDropdown = true
+    this.$loading = true
+    const query = this.newQuery().where(key, true)
+    const response = await this.$api.get(this.$path, query.toJSON())
+    this.$loading = false
+    if (response.failed) {
+      throw new Error(response.message)
+    }
+
+    if (Array.isArray(response.data)) {
+      this.setItems(response.data)
+    }
+
+    return this
+  }
+
   async paginate(page = 1, perPage) {
+    this.$asDropdown = false
     this.$paginate.perPage = perPage
     this.$paginate.currentPage = page
     this.$loading = true
@@ -41,6 +60,12 @@ export default class OgCollection extends OgQueryBuilder {
       meta: this.$paginate.toJSON(),
       items: this.$elements.map((item) => item.toJSON())
     }
+  }
+
+  setItems(items = []) {
+    const Collector = this.$collector
+    this.$elements = items.map((item) => new Collector(this.$api, item))
+    return this
   }
 
   get items() {

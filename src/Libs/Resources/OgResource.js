@@ -3,20 +3,24 @@ import OgResourceCast from './OgResourceCast'
 import OgQueryBuilder from '~/Bxpert/Sdk/src/Libs/Http/OgQueryBuilder'
 import OgResponse from '~/Bxpert/Sdk/src/Libs/Http/OgResponse'
 
-const getCastValue = (config, key, casts = {}, value = null) => {
+const getCastValue = (api, key, casts = {}, value = null) => {
   if (!casts[key]) {
     return value
   }
 
-  const type = casts[key]
+  const Type = casts[key]
 
-  if (OgResourceCast.isPrototypeOf(type) || OgResource.isPrototypeOf(type)) {
-    return new type(config, value)
+  if (OgResourceCast.isPrototypeOf(Type)) {
+    return new Type(api.config, value)
+  }
+
+  if (OgResource.isPrototypeOf(Type)) {
+    return new Type(api, value)
   }
 
   let output
 
-  switch (type) {
+  switch (Type) {
     case 'boolean':
       output = value ? Boolean(value) : false
       break
@@ -56,6 +60,7 @@ export default class OgResource extends OgQueryBuilder {
     this.$casts = {}
     this.$attributes = {}
     this.$primaryKey = 'id'
+    this.$trace = 0
     this.$status = {
       updating: false,
       fetching: false,
@@ -64,6 +69,21 @@ export default class OgResource extends OgQueryBuilder {
     }
     this.$path = path || '/'
     this.fill(attributes)
+  }
+
+  async save() {
+    this.$api.abort()
+    this._statusReset()
+    this.$response.clear()
+    this.$status.creating = true
+    this.$response = await this.$api.post(this.$path, this.toJSON())
+    if (this.$response.failed) {
+      this._statusReset()
+      throw new Error(this.$response.message)
+    }
+    this.fill(this.$response.data)
+    this.$status.creating = false
+    return this
   }
 
   fail(path) {
@@ -87,7 +107,7 @@ export default class OgResource extends OgQueryBuilder {
   }
 
   reset() {
-    this.$attributes = this.toJSON()
+    this.$attributes = this.SCHEMA
   }
 
   abort() {
@@ -95,21 +115,6 @@ export default class OgResource extends OgQueryBuilder {
     this._statusReset()
     this.$response.clear()
     this.reset()
-  }
-
-  async save() {
-    this.$api.abort()
-    this._statusReset()
-    this.$response.clear()
-    this.$status.creating = true
-    this.$response = await this.$api.post(this.$path, this.toJSON())
-    if (this.$response.failed) {
-      this._statusReset()
-      throw new Error(this.$response.message)
-    }
-    this.fill(this.$response.data)
-    this.$status.creating = false
-    return this
   }
 
   /**
@@ -123,7 +128,7 @@ export default class OgResource extends OgQueryBuilder {
     Object.keys(casts).forEach((path) => {
       this.cast(path, casts[path])
     })
-    this.$attributes = this.toJSON()
+    this.$attributes = this.SCHEMA
     return this
   }
 
@@ -180,18 +185,13 @@ export default class OgResource extends OgQueryBuilder {
     set(
       this.$attributes,
       path,
-      getCastValue(this.$api.config, path, this.$casts, value)
+      getCastValue(this.$api, path, this.$casts, value)
     )
     return this
   }
 
   get(path, defaultValue = null) {
-    const value = get(this.$attributes, path, defaultValue)
-    if (!value) {
-      const schema = this.SCHEMA
-      return get(schema, path, defaultValue)
-    }
-    return value
+    return get(this.$attributes, path, defaultValue)
   }
 
   /**
@@ -214,12 +214,11 @@ export default class OgResource extends OgQueryBuilder {
     Object.keys(this.$casts).forEach((path) => {
       set(out, path, this.get(path))
     })
-
     return out
   }
 
   get FAILED_BY_SESSION_EXPIRE() {
-    return this.$response.status === OgResponse.HTTP_TOKEN_MISMATCH
+    return this.$response.FAILED_BY_SESSION_EXPIRE
   }
 
   get FAILED_MESSAGE() {
@@ -261,7 +260,7 @@ export default class OgResource extends OgQueryBuilder {
   get SCHEMA() {
     const schema = {}
     Object.keys(this.$casts).forEach((path) => {
-      set(schema, path, getCastValue(this.$api.config, path, this.$casts, null))
+      set(schema, path, getCastValue(this.$api, path, this.$casts, null))
       const value = get(schema, path)
       if (isObject(value) && value instanceof OgResource) {
         set(schema, path, value.SCHEMA)

@@ -1,5 +1,3 @@
-import Bootstrap from '~/Bxpert/Sdk/src/Sdk/Bootstrap'
-
 const parseMessageFromData = (data = {}, defaults = '') => {
   if (!data || !data.message) {
     return defaults
@@ -127,10 +125,9 @@ export default class OgResponse {
   }
 
   get message() {
-    this.$message = this.$config.locale.trans(
+    return this.$config.locale.trans(
       parseMessageFromData(this.$data, this.$message)
     )
-    return this.$message
   }
 
   get messages() {
@@ -175,6 +172,17 @@ export default class OgResponse {
 
   get status() {
     return this.$status
+  }
+
+  get FAILED_BY_SESSION_EXPIRE() {
+    const message = parseMessageFromData(this.$data, this.$message)
+    if (
+      this.status === OgResponse.HTTP_UNAUTHORIZED &&
+      message === 'Unauthenticated.'
+    ) {
+      return true
+    }
+    return [OgResponse.HTTP_TOKEN_MISMATCH].includes(this.status)
   }
 
   static get HTTP_OK() {
