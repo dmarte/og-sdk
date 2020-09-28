@@ -56,11 +56,10 @@ export default class OgResource extends OgQueryBuilder {
     super(api.config)
     this.$api = api
     this.$response = new OgResponse(api.config)
+    this.$primaryKey = 'id'
     this.$fillable = []
     this.$casts = {}
     this.$attributes = {}
-    this.$primaryKey = 'id'
-    this.$trace = 0
     this.$status = {
       updating: false,
       fetching: false,
@@ -71,7 +70,26 @@ export default class OgResource extends OgQueryBuilder {
     this.fill(attributes)
   }
 
-  async save() {
+  async findOrFail(id) {
+    if (!id) {
+      return this
+    }
+    this.$api.abort()
+    this._statusReset()
+    this.$response.clear()
+    this.$status.fetching = true
+    const url = [this.$path, id].join('/')
+    this.$response = await this.$api.get(url)
+    if (this.$response.failed) {
+      this.$status.fetching = false
+      throw new Error(this.$response.message)
+    }
+    this._statusReset()
+    this.fill(this.$response.data)
+    return this
+  }
+
+  async create() {
     this.$api.abort()
     this._statusReset()
     this.$response.clear()
@@ -84,6 +102,33 @@ export default class OgResource extends OgQueryBuilder {
     this.fill(this.$response.data)
     this.$status.creating = false
     return this
+  }
+
+  async update() {
+    this.$api.abort()
+    this._statusReset()
+    this.$response.clear()
+    this.$status.updating = true
+    const url = [this.$path, this.primaryKeyValue].join('/')
+    this.$response = await this.$api.post(url, {
+      ...this.toJSON(),
+      _method: 'PUT'
+    })
+    if (this.$response.failed) {
+      this._statusReset()
+      throw new Error(this.$response.message)
+    }
+    this.fill(this.$response.data)
+    this._statusReset()
+    return this
+  }
+
+  async save() {
+    if (this.primaryKeyValue) {
+      return await this.update()
+    }
+
+    return await this.create()
   }
 
   fail(path) {
@@ -107,14 +152,13 @@ export default class OgResource extends OgQueryBuilder {
   }
 
   reset() {
+    this.$response.clear()
     this.$attributes = this.SCHEMA
   }
 
   abort() {
     this.$api.abort()
     this._statusReset()
-    this.$response.clear()
-    this.reset()
   }
 
   /**
@@ -168,11 +212,11 @@ export default class OgResource extends OgQueryBuilder {
    * @returns {OgResource}
    */
   fill(attributes) {
+    if (!attributes) {
+      return this
+    }
     this.$fillable.forEach((path) => {
       const value = get(attributes, path, null)
-      if (!value) {
-        return
-      }
       this.set(path, value)
     })
     return this
@@ -215,6 +259,10 @@ export default class OgResource extends OgQueryBuilder {
       set(out, path, this.get(path))
     })
     return out
+  }
+
+  get primaryKeyValue() {
+    return this.get(this.$primaryKey)
   }
 
   get FAILED_BY_SESSION_EXPIRE() {

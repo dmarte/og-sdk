@@ -23,8 +23,8 @@ export default class OgCollection extends OgQueryBuilder {
     this.$loading = true
     const query = this.newQuery().where(key, true)
     const response = await this.$api.get(this.$path, query.toJSON())
-    this.$loading = false
     if (response.failed) {
+      this.$loading = false
       throw new Error(response.message)
     }
 
@@ -32,6 +32,7 @@ export default class OgCollection extends OgQueryBuilder {
       this.setItems(response.data)
     }
 
+    this.$loading = false
     return this
   }
 
@@ -42,12 +43,15 @@ export default class OgCollection extends OgQueryBuilder {
     this.$loading = true
     this.wherePagination(this.$paginate)
     const response = await this.$api.get(this.$path, super.toJSON())
-    if (response.meta) {
-      this.$paginate.fill(response.meta)
+    if (response.failed) {
+      throw new Error(response.message)
     }
-    if (Array.isArray(response.data)) {
+    if (response.data.meta) {
+      this.$paginate.fill(response.data.meta)
+    }
+    if (Array.isArray(response.data.data)) {
       const Resource = this.collector
-      this.$elements = response.data.map(
+      this.$elements = response.data.data.map(
         (item) => new Resource(this.$api, item)
       )
     }
@@ -68,6 +72,16 @@ export default class OgCollection extends OgQueryBuilder {
     return this
   }
 
+  add(item) {
+    const Collector = this.$collector
+    this.$elements.push(new Collector(this.$api, item))
+    return this
+  }
+
+  get length() {
+    return this.items.length
+  }
+
   get items() {
     return this.$elements
   }
@@ -86,5 +100,9 @@ export default class OgCollection extends OgQueryBuilder {
 
   get IS_LOADING() {
     return this.$loading
+  }
+
+  get IS_EMPTY() {
+    return !this.$loading && this.length < 1
   }
 }

@@ -19,6 +19,7 @@ export default class Bootstrap extends OgConfig {
     this.set('API_CREDENTIALS', false)
     // Countries allowed
     this.set('ALLOWED_COUNTRIES', ['US', 'DO'])
+    this.set('ALLOWED_CURRENCIES', ['USD', 'DOP'])
     // OgAuth module
     this.set('AUTH_API_PATH_LOGIN', 'login')
     this.set('AUTH_API_PATH_USER', 'users/current')
@@ -34,6 +35,10 @@ export default class Bootstrap extends OgConfig {
     this.set('locale', new OgLocale(this, vue.i18n))
     this.set('router', vue.$router)
     this.set('app', vue)
+  }
+
+  get language() {
+    return 'es'
   }
 
   /**
@@ -76,6 +81,13 @@ export default class Bootstrap extends OgConfig {
     return this.get('ALLOWED_COUNTRIES', []).map((value) => ({
       value,
       text: this.locale.trans(`countries.${value}`)
+    }))
+  }
+
+  get DROPDOWN_CURRENCIES_DATA() {
+    return this.get('ALLOWED_CURRENCIES', []).map((value) => ({
+      value,
+      text: this.locale.trans(`currencies.${value}`)
     }))
   }
 
