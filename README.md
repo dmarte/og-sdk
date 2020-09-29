@@ -12,6 +12,8 @@ Includes support for Nuxt.js, Laravel Passport, Laravel Sanctum.
 - Use custom classes to cast values from API
 - Play well with model binding (Vue, React)
 - Let you write your resource logic within ES6 Classes.
+- Use `fetch` to make requests
+- Easy to customize
 
 ### Nuxt settings
 
