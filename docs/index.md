@@ -1,37 +1,13 @@
-## Welcome to GitHub Pages
+# What it is about?
+OgSDK is a set of libraries written in JavaScript to be used as independent SDK to interact with Laravel Basis API.
 
-You can use the [editor on GitHub](https://github.com/famartech/og-sdk/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+It is well tested with [**Laravel Sanctum**](https://laravel.com/docs/8.x/sanctum) and [**Laravel Passport**](https://laravel.com/docs/8.x/passport).
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+It also includes a [Nuxt.js](https://nuxtjs.org/) plugin to be used with that framework.
 
-### Markdown
+## So... why may I need this?
+When you work with an SPA sometimes you realize that you are repeating your over and over the same steps to `fetch`,`create`,`update`,`delete`. Sometimes that could be a painful task because you need some logic around the resource your are fetching, so that your Vue or React components get messy with code you could separate in layers.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Also you may need "cast" values from APIs or just let some fields to be fetched from your API.
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/famartech/og-sdk/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+With OgSDK you can do all of that and more with a human readable api (Laravel Like Api).
