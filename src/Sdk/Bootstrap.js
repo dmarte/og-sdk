@@ -1,8 +1,7 @@
 import OgConfig from '../Libs/OgConfig'
 import OgApi from '../Libs/Http/OgApi'
 import OgAuth from '../Libs/Http/OgAuth'
-import OgUserResource from '../Sdk/Resources/OgUserResource'
-import OgLocale from '~/Bxpert/Sdk/src/Libs/OgLocale'
+import OgLocale from '../Libs/OgLocale'
 
 export default class Bootstrap extends OgConfig {
   /**
@@ -11,6 +10,10 @@ export default class Bootstrap extends OgConfig {
    */
   constructor(options, vue) {
     super()
+    this.set(
+      'APP_URL',
+      process.env.OG_SDK_URL_APP || process.env.APP_URL || process.env.BASE_URL
+    )
     // URL base to make API requests.
     this.set('API_URL', process.env.OG_SDK_URL_API)
     // Headers must be included with every request.
@@ -21,6 +24,8 @@ export default class Bootstrap extends OgConfig {
     this.set('ALLOWED_COUNTRIES', ['US', 'DO'])
     this.set('ALLOWED_CURRENCIES', ['USD', 'DOP'])
     // OgAuth module
+    this.set('AUTH_WEB_HOME', '/') // Where is the home page after login
+    this.set('AUTH_WEB_LOGIN', '/auth/login') // Where to login form
     this.set('AUTH_API_PATH_LOGIN', 'login')
     this.set('AUTH_API_PATH_USER', 'users/current')
     this.set('AUTH_USER_RESOURCE', null)

@@ -1,6 +1,6 @@
+import Bootstrap from '../../Sdk/Bootstrap'
+import OgResponse from './OgResponse'
 import OgCookie from './OgCookie'
-import OgResponse from '~/Bxpert/Sdk/src/Libs/Http/OgResponse'
-import Bootstrap from '~/Bxpert/Sdk/src/Sdk/Bootstrap'
 
 export default class OgApi {
   /**
@@ -63,11 +63,19 @@ export default class OgApi {
     return params
   }
 
-  async request(path, data = {}, method = 'GET', headers = {}) {
+  /**
+   *
+   * @param path
+   * @param {String|Object} data
+   * @param method
+   * @param headers
+   * @returns {Promise<OgResponse>}
+   */
+  async request(path, data, method = 'GET', headers = {}) {
     this.$response.clear()
     const url = new URL(this.url(path))
 
-    if (method === 'GET') {
+    if (method === 'GET' && data) {
       url.search = this.query(data)
     }
 
@@ -85,12 +93,17 @@ export default class OgApi {
     return this.$response
   }
 
-  async post(path, data) {
-    return await this.request(path, data, 'POST')
+  post(path, data) {
+    return this.request(path, data, 'POST')
   }
 
-  async get(path, query = {}) {
-    return await this.request(path, query, 'GET')
+  /**
+   * @param {String} path
+   * @param {String|Object} query
+   * @returns {Promise<OgResponse>}
+   */
+  get(path, query) {
+    return this.request(path, query, 'GET')
   }
 
   url(path = '') {
@@ -139,7 +152,7 @@ export default class OgApi {
       init.credentials = 'include'
     }
 
-    this.withCookeXSRFHeader()
+    this.withCookeXSRFHeader().acceptJson()
 
     init.headers = {
       ...this.config.get('API_HEADERS', {}),

@@ -42,7 +42,7 @@ export default class OgCollection extends OgQueryBuilder {
     this.$paginate.currentPage = page
     this.$loading = true
     this.wherePagination(this.$paginate)
-    const response = await this.$api.get(this.$path, super.toJSON())
+    const response = await this.$api.get(this.$path, super.toQueryString())
     if (response.failed) {
       throw new Error(response.message)
     }

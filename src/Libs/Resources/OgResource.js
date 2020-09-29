@@ -1,7 +1,7 @@
-import { set, get, isObject } from 'lodash'
+import { set, get, isObject, isFunction } from 'lodash'
+import OgQueryBuilder from '../Http/OgQueryBuilder'
+import OgResponse from '../Http/OgResponse'
 import OgResourceCast from './OgResourceCast'
-import OgQueryBuilder from '~/Bxpert/Sdk/src/Libs/Http/OgQueryBuilder'
-import OgResponse from '~/Bxpert/Sdk/src/Libs/Http/OgResponse'
 
 const getCastValue = (api, key, casts = {}, value = null) => {
   if (!casts[key]) {
@@ -10,11 +10,17 @@ const getCastValue = (api, key, casts = {}, value = null) => {
 
   const Type = casts[key]
 
-  if (OgResourceCast.isPrototypeOf(Type)) {
+  if (
+    isFunction(Type) &&
+    Object.prototype.isPrototypeOf.call(OgResourceCast, Type)
+  ) {
     return new Type(api.config, value)
   }
 
-  if (OgResource.isPrototypeOf(Type)) {
+  if (
+    isFunction(Type) &&
+    Object.prototype.isPrototypeOf.call(OgResource, Type)
+  ) {
     return new Type(api, value)
   }
 
@@ -123,12 +129,12 @@ export default class OgResource extends OgQueryBuilder {
     return this
   }
 
-  async save() {
+  save() {
     if (this.primaryKeyValue) {
-      return await this.update()
+      return this.update()
     }
 
-    return await this.create()
+    return this.create()
   }
 
   fail(path) {

@@ -91,6 +91,16 @@ export default class OgQueryBuilder {
     return this.$query.has(this.pathToQueryString(path))
   }
 
+  toQueryString() {
+    const out = {}
+
+    for (const item of this.$query.entries()) {
+      const key = item.shift()
+      out[key] = item.pop()
+    }
+    return out
+  }
+
   toString() {
     return this.$query.toString()
   }

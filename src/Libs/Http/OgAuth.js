@@ -58,6 +58,8 @@ export default class OgAuth extends OgSessionStorage {
    * @returns {Promise<OgAuth>}
    */
   async login(email, password) {
+    await this.logout()
+    this.$api.acceptJson().contentTypeJson()
     this.$response = await this.$api.post(this.URL_LOGIN, { email, password })
     if (this.$response.failed) {
       throw new Error(this.$response.message)
