@@ -16,6 +16,14 @@ export default class OgLocale {
     return this.$i18n.t(path, placeholders)
   }
 
+  choice(path, index = 0, placeholders = {}, defaultValue = null) {
+    if (!this.exists(path)) {
+      return defaultValue || path
+    }
+
+    return this.$i18n.tc(path, index, placeholders)
+  }
+
   exists(key) {
     if (!this.$i18n) {
       return false

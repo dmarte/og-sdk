@@ -11,7 +11,7 @@ export default class OgCollection extends OgQueryBuilder {
     super(api.config)
     this.$elements = []
     this.$collector = collector
-    this.$paginate = new OgPagination(api)
+    this.$paginate = new OgPagination(api.config)
     this.$loading = false
     this.$asDropdown = true
     this.$api = api

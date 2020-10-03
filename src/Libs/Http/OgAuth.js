@@ -95,7 +95,7 @@ export default class OgAuth extends OgSessionStorage {
 
     this.set(this.PATH_USER, this.$response.data)
 
-    this.$user = new OgUserResource(this.$api, this.$response.data)
+    this.$user = new this.USER_RESOURCE(this.$api, this.$response.data)
 
     return this.$user
   }

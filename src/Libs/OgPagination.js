@@ -51,7 +51,14 @@ export default class OgPagination {
   }
 
   toString() {
-    return this.$config.locale.trans('Your are seeing amount pages', this.$meta)
+    if (this.$meta.total < 1) {
+      return ''
+    }
+    return this.$config.locale.choice(
+      'Your are seeing amount pages',
+      this.$meta.total,
+      this.$meta
+    )
   }
 
   toJSON() {
@@ -101,6 +108,14 @@ export default class OgPagination {
   }
 
   set to(value) {
+    this.$meta.to = parseInt(value)
+  }
+
+  get total() {
+    return this.$meta.total
+  }
+
+  set total(value) {
     this.$meta.to = parseInt(value)
   }
 

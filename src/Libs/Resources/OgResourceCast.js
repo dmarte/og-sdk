@@ -5,7 +5,7 @@ import _ from 'lodash'
  */
 export default class OgResourceCast {
   /**
-   * @param {OgConfig} config
+   * @param {Bootstrap} config
    * @param {*} value
    */
   constructor(config, value) {
