@@ -1,6 +1,19 @@
-# og-sdk
+# OgSDK
 
-This SDK set of libraries could be used to interact with APIS.
+A set of Javascript Libraries designed to used on SPA apps and interact with Laravel Basis API.
+
+Includes support for Nuxt.js, Laravel Passport, Laravel Sanctum.
+
+### Features
+- Authentication
+- Api Collection and pagination 
+- Api Resource 
+- Cast values on resources
+- Use custom classes to cast values from API
+- Play well with model binding (Vue, React)
+- Let you write your resource logic within ES6 Classes.
+- Use `fetch` to make requests
+- Easy to customize
 
 ### Nuxt settings
 
