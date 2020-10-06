@@ -13,8 +13,15 @@ export default class OgResourceCast {
     this.$config = config
   }
 
-  toJSON() {
+  get value() {
     return this.$value
+  }
+
+  toJSON() {
+    if (this.IS_STRING) {
+      return this.toString()
+    }
+    return JSON.parse(JSON.stringify(this.$value))
   }
 
   toString() {

@@ -67,6 +67,16 @@ export default class OgQueryBuilder {
   }
 
   /**
+   * Set a general query filter.
+   *
+   * @param {String} value
+   * @returns {OgQueryBuilder}
+   */
+  whereQuery(value) {
+    return this.where('q', value)
+  }
+
+  /**
    * Set an object pagination
    * into the query string.
    *
@@ -78,6 +88,19 @@ export default class OgQueryBuilder {
     Object.keys(pagination).forEach((key) => {
       this.where(key, pagination[key])
     })
+    return this
+  }
+
+  /**
+   * Let us set the sort direction of column.
+   *
+   * @param {String} path
+   * @param {Boolean} desc
+   * @returns {OgQueryBuilder}
+   */
+  sortBy(path, desc = false) {
+    this.where('sort_by', path)
+    this.where('sort_desc', desc)
     return this
   }
 

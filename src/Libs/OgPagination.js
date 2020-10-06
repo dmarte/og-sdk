@@ -66,14 +66,14 @@ export default class OgPagination {
   }
 
   get perPage() {
-    return this.$meta.perPage
+    return parseInt(this.$meta.perPage) || OgPagination.DEFAULT_PER_PAGE
   }
 
   set perPage(value) {
     if (!value) {
       this.$meta.perPage = this.PER_PAGE
     }
-    this.$meta.perPage = parseInt(value) || OgPagination.DEFAULT_PER_PAGE
+    this.$meta.perPage = value || OgPagination.DEFAULT_PER_PAGE
   }
 
   get currentPage() {

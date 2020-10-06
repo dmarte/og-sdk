@@ -31,6 +31,10 @@ export default class Bootstrap extends OgConfig {
     this.set('AUTH_USER_RESOURCE', null)
     this.set('AUTH_SESSION_KEY_TOKEN', 'auth.token')
     this.set('AUTH_SESSION_KEY_USER', 'auth.user')
+    this.set('AUTH_ON_SESSION_EXPIRE_CALLBACK', () => {
+      this.auth.logout()
+      window.location = this.get('AUTH_WEB_LOGIN')
+    })
     // Collections
     this.set('COLLECTION_PER_PAGE', 15)
     this.fill(options)

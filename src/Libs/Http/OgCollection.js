@@ -18,11 +18,18 @@ export default class OgCollection extends OgQueryBuilder {
     this.$path = path
   }
 
-  async dropdown(key = 'dropdown') {
+  async dropdown(search = '', key = 'dropdown') {
     this.$asDropdown = true
     this.$loading = true
     const query = this.newQuery().where(key, true)
-    const response = await this.$api.get(this.$path, query.toJSON())
+    const q = this.toQueryString()
+    Object.keys(q).forEach((k) => {
+      query.where(this.queryStringToDotNotation(k), q[k])
+    })
+    if (search) {
+      query.whereQuery(search)
+    }
+    const response = await this.$api.get(this.$path, query.toQueryString())
     if (response.failed) {
       this.$loading = false
       throw new Error(response.message)
@@ -36,12 +43,12 @@ export default class OgCollection extends OgQueryBuilder {
     return this
   }
 
-  async paginate(page = 1, perPage) {
+  async paginate(page = 1, perPage = 15, sortBy = 'id', sortDesc = true) {
     this.$asDropdown = false
     this.$paginate.perPage = perPage
     this.$paginate.currentPage = page
     this.$loading = true
-    this.wherePagination(this.$paginate)
+    this.wherePagination(this.$paginate).sortBy(sortBy, sortDesc)
     const response = await this.$api.get(this.$path, super.toQueryString())
     if (response.failed) {
       throw new Error(response.message)

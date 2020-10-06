@@ -90,6 +90,10 @@ export default class OgApi {
       resp.status,
       resp.statusText
     )
+
+    if (this.$response.FAILED_BY_SESSION_EXPIRE) {
+      this.config.get('AUTH_ON_SESSION_EXPIRE_CALLBACK')(this.$response)
+    }
     return this.$response
   }
 

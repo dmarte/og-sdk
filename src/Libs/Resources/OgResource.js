@@ -97,6 +97,7 @@ export default class OgResource extends OgQueryBuilder {
 
   async create() {
     this.$api.abort()
+    this.$api.contentTypeJson()
     this._statusReset()
     this.$response.clear()
     this.$status.creating = true
@@ -112,6 +113,7 @@ export default class OgResource extends OgQueryBuilder {
 
   async update() {
     this.$api.abort()
+    this.$api.contentTypeJson()
     this._statusReset()
     this.$response.clear()
     this.$status.updating = true
