@@ -43,6 +43,14 @@ export default class OgCollection extends OgQueryBuilder {
     return this
   }
 
+  reset() {
+    super.reset()
+    this.$loading = false
+    this.$asDropdown = false
+    this.paginator.reset()
+    return this
+  }
+
   async paginate(page = 1, perPage = 15, sortBy = 'id', sortDesc = true) {
     this.$asDropdown = false
     this.$paginate.perPage = perPage

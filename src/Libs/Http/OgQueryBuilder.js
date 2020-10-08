@@ -13,6 +13,11 @@ export default class OgQueryBuilder {
     this.$config = boot
   }
 
+  reset() {
+    this.$query = new URLSearchParams()
+    return this
+  }
+
   /**
    * @returns {OgQueryBuilder}
    */
@@ -73,7 +78,11 @@ export default class OgQueryBuilder {
    * @returns {OgQueryBuilder}
    */
   whereQuery(value) {
-    return this.where('q', value)
+    if (!value) {
+      return this
+    }
+    this.where('q', value)
+    return this
   }
 
   /**

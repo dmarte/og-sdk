@@ -26,6 +26,17 @@ export default class OgPagination {
     return this
   }
 
+  reset() {
+    this.fill({
+      perPage: this.PER_PAGE,
+      currentPage: 1,
+      lastPage: 1,
+      from: 0,
+      to: 0,
+      total: 0
+    })
+  }
+
   getLastPageFromMeta(meta) {
     return meta.lastPage || meta.last_page || this.$meta.lastPage
   }
