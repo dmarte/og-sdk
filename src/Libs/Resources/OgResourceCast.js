@@ -13,6 +13,10 @@ export default class OgResourceCast {
     this.$config = config
   }
 
+  set settings(config) {}
+
+  get settings() {}
+
   get value() {
     return this.$value
   }

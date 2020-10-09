@@ -123,12 +123,26 @@ export default class OgQueryBuilder {
     return this.$query.has(this.pathToQueryString(path))
   }
 
+  getQueryString(path) {
+    const query = this.toQueryString()
+    const parts = [`${path}?`]
+    Object.keys(query).forEach((key) => {
+      parts.push(`${key}=${query[key]}`)
+    })
+    return parts.join('&')
+  }
+
   toQueryString() {
     const out = {}
-
-    for (const item of this.$query.entries()) {
-      const key = item.shift()
-      out[key] = item.pop()
+    for (const key of this.$query.keys()) {
+      const values = this.$query.getAll(key)
+      if (values.length > 1) {
+        values.forEach((val, index) => {
+          out[`${key}[${index}]`] = val
+        })
+        continue
+      }
+      out[key] = values.pop()
     }
     return out
   }

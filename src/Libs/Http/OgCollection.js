@@ -43,6 +43,10 @@ export default class OgCollection extends OgQueryBuilder {
     return this
   }
 
+  abort() {
+    this.$api.abort()
+  }
+
   reset() {
     super.reset()
     this.$loading = false

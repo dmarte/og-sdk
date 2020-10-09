@@ -42,7 +42,7 @@ export default class OgPagination {
   }
 
   getPerPageFromMeta(meta) {
-    return meta.perPage || meta.per_page || this.PER_PAGE
+    return parseInt(meta.perPage) || parseInt(meta.per_page) || this.PER_PAGE
   }
 
   getCurrentPageFromMeta(meta) {

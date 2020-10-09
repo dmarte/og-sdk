@@ -101,7 +101,7 @@ export default class Bootstrap extends OgConfig {
   }
 
   get COLLECTION_PER_PAGE() {
-    return this.get('COLLECTION_PER_PAGE')
+    return this.get('COLLECTION_PER_PAGE', 15)
   }
 
   get AUTH_USER_RESOURCE() {

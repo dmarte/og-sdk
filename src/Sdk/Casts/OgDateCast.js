@@ -8,6 +8,14 @@ export default class OgDateCast extends OgResourceCast {
     this.$format = DateTime.DATETIME_MED
   }
 
+  set settings(format) {
+    this.$format = format
+  }
+
+  get settings() {
+    return this.$format
+  }
+
   get date() {
     return this.$value.toJSDate()
   }
@@ -24,9 +32,20 @@ export default class OgDateCast extends OgResourceCast {
     if (!this.$value.isValid) {
       return ''
     }
+
     return this.$value
       .setLocale(this.$config.language)
       .toLocaleString({ ...this.$format, hour12: true })
+  }
+
+  useShortDate() {
+    this.$format = DateTime.DATE_SHORT
+    return this
+  }
+
+  useWithoutTime() {
+    this.$format = DateTime.DATE_MED
+    return this
   }
 
   toString() {

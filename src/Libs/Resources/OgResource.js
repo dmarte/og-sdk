@@ -3,7 +3,7 @@ import OgQueryBuilder from '../Http/OgQueryBuilder'
 import OgResponse from '../Http/OgResponse'
 import OgResourceCast from './OgResourceCast'
 
-const getCastValue = (api, key, casts = {}, value = null) => {
+const getCastValue = (api, key, casts = {}, value = null, settings) => {
   if (!casts[key]) {
     return value
   }
@@ -14,7 +14,13 @@ const getCastValue = (api, key, casts = {}, value = null) => {
     isFunction(Type) &&
     Object.prototype.isPrototypeOf.call(OgResourceCast, Type)
   ) {
-    return new Type(api.config, value)
+    const t = new Type(api.config, value)
+    // Let the casts types get the same settings
+    // the previous one had.
+    if (settings) {
+      t.settings = settings
+    }
+    return t
   }
 
   if (
@@ -76,6 +82,13 @@ export default class OgResource extends OgQueryBuilder {
     this.fill(attributes)
   }
 
+  clone(Resource) {
+    if (Resource instanceof OgResource) {
+      return new Resource.constructor(this.$api, this.toJSON())
+    }
+    return new Resource(this.$api, this.toJSON())
+  }
+
   async findOrFail(id) {
     if (!id) {
       return this
@@ -85,7 +98,7 @@ export default class OgResource extends OgQueryBuilder {
     this.$response.clear()
     this.$status.fetching = true
     const url = [this.$path, id].join('/')
-    this.$response = await this.$api.get(url)
+    this.$response = await this.$api.get(url, this.toQueryString())
     if (this.$response.failed) {
       this.$status.fetching = false
       throw new Error(this.$response.message)
@@ -101,7 +114,10 @@ export default class OgResource extends OgQueryBuilder {
     this._statusReset()
     this.$response.clear()
     this.$status.creating = true
-    this.$response = await this.$api.post(this.$path, this.toJSON())
+    this.$response = await this.$api.post(
+      this.getQueryString(this.$path),
+      this.toJSON()
+    )
     if (this.$response.failed) {
       this._statusReset()
       throw new Error(this.$response.message)
@@ -118,7 +134,7 @@ export default class OgResource extends OgQueryBuilder {
     this.$response.clear()
     this.$status.updating = true
     const url = [this.$path, this.primaryKeyValue].join('/')
-    this.$response = await this.$api.post(url, {
+    this.$response = await this.$api.post(this.getQueryString(url), {
       ...this.toJSON(),
       _method: 'PUT'
     })
@@ -234,10 +250,13 @@ export default class OgResource extends OgQueryBuilder {
     if (!this.$fillable.includes(path)) {
       return this
     }
+
+    const current = get(this.$attributes, path) || {}
+
     set(
       this.$attributes,
       path,
-      getCastValue(this.$api, path, this.$casts, value)
+      getCastValue(this.$api, path, this.$casts, value, current.settings)
     )
     return this
   }
@@ -264,7 +283,11 @@ export default class OgResource extends OgQueryBuilder {
   toJSON() {
     const out = {}
     Object.keys(this.$casts).forEach((path) => {
-      set(out, path, this.get(path))
+      let value = this.get(path)
+      if (value instanceof OgResourceCast || value instanceof OgResource) {
+        value = value.toJSON()
+      }
+      set(out, path, value)
     })
     return out
   }
