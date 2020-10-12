@@ -21,7 +21,25 @@ export default class Bootstrap extends OgConfig {
     // Determine whether or not to include credentials.
     this.set('API_CREDENTIALS', false)
     // Countries allowed
-    this.set('ALLOWED_COUNTRIES', ['US', 'DO'])
+    this.set('ALLOWED_COUNTRIES', [
+      'DO',
+      'ES',
+      'IT',
+      'CA',
+      'US',
+      'MX',
+      'HT',
+      'CO',
+      'VE',
+      'EC',
+      'PE',
+      'CN',
+      'NO',
+      'DK',
+      'LB',
+      'IL',
+      'SA'
+    ])
     this.set('ALLOWED_CURRENCIES', ['USD', 'DOP'])
     // OgAuth module
     this.set('AUTH_WEB_HOME', '/') // Where is the home page after login

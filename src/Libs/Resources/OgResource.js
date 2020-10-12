@@ -241,6 +241,9 @@ export default class OgResource extends OgQueryBuilder {
     }
     this.$fillable.forEach((path) => {
       const value = get(attributes, path, null)
+      if (!value && this.filled(path)) {
+        return
+      }
       this.set(path, value)
     })
     return this

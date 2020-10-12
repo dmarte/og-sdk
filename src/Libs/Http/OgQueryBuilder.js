@@ -13,6 +13,10 @@ export default class OgQueryBuilder {
     this.$config = boot
   }
 
+  /**
+   * Reset the current query builder.
+   * @returns {OgQueryBuilder}
+   */
   reset() {
     this.$query = new URLSearchParams()
     return this
@@ -123,6 +127,12 @@ export default class OgQueryBuilder {
     return this.$query.has(this.pathToQueryString(path))
   }
 
+  /**
+   * Transform the current query to a string chain.
+   *
+   * @param {string} path
+   * @returns {string}
+   */
   getQueryString(path) {
     const query = this.toQueryString()
     const parts = [`${path}?`]
@@ -132,6 +142,11 @@ export default class OgQueryBuilder {
     return parts.join('&')
   }
 
+  /**
+   * Export to object the current query.
+   *
+   * @returns {{}}
+   */
   toQueryString() {
     const out = {}
     for (const key of this.$query.keys()) {
@@ -147,6 +162,10 @@ export default class OgQueryBuilder {
     return out
   }
 
+  /**
+   * Convert to chain string.
+   * @returns {string}
+   */
   toString() {
     return this.$query.toString()
   }
