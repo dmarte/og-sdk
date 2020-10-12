@@ -55,6 +55,18 @@ export default class OgCollection extends OgQueryBuilder {
     return this
   }
 
+  async paginateFromQuery(query) {
+    if (!query) {
+      query = {}
+    }
+    const perPage = query.perPage || this.paginator.perPage
+    const currentPage = query.currentPage || this.paginator.currentPage
+    const sortBy = query.sortBy || 'id'
+    const sortDesc = query.sortDesc === 'true' || false
+    await this.paginate(currentPage, perPage, sortBy, sortDesc)
+    return this
+  }
+
   async paginate(page = 1, perPage = 15, sortBy = 'id', sortDesc = true) {
     this.$asDropdown = false
     this.$paginate.perPage = perPage
