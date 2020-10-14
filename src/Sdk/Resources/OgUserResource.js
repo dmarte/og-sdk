@@ -28,6 +28,18 @@ export default class OgUserResource extends OgResource {
     return email.substring(0, email.lastIndexOf('@')).replace(/\W/, '')
   }
 
+  get currency() {
+    if (this.filled('currency')) {
+      return this.get('currency')
+    }
+    const option = this.$config.DROPDOWN_CURRENCIES_DATA[0] || {
+      value: 'DOP',
+      text: ''
+    }
+
+    return option.value
+  }
+
   get id() {
     return this.get('id')
   }

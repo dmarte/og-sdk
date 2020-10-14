@@ -45,6 +45,9 @@ const getCastValue = (api, key, casts = {}, value = null, settings) => {
     case 'decimal':
       output = parseFloat(value) || 0.0
       break
+    case 'id':
+      output = parseInt(value, 10) || null
+      break
     default:
       output = value
       break

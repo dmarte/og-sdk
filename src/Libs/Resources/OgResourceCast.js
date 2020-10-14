@@ -71,4 +71,8 @@ export default class OgResourceCast {
   static get TYPE_ARRAY() {
     return 'array'
   }
+
+  static get TYPE_ID() {
+    return 'id'
+  }
 }

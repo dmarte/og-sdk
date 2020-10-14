@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import OgPagination from '../OgPagination'
 import OgQueryBuilder from './OgQueryBuilder'
 
@@ -53,6 +54,30 @@ export default class OgCollection extends OgQueryBuilder {
     this.$asDropdown = false
     this.paginator.reset()
     return this
+  }
+
+  /**
+   * @returns {OgResource}
+   */
+  first() {
+    return this.items[0] || new this.$collector(this.$api)
+  }
+
+  /**
+   * Get a { value, text } object from the list
+   * useful to be used for dropdown or select forms.
+   *
+   * @param {String} pathText
+   * @param {String} pathValue
+   * @returns {{text, value: *}[]}
+   */
+  pluck(pathText, pathValue) {
+    return this.items.map((item) => {
+      return {
+        value: _.get(item, pathValue || 'id', null),
+        text: _.get(item, pathText || 'text', null)
+      }
+    })
   }
 
   async paginateFromQuery(query) {
