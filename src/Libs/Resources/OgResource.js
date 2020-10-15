@@ -94,7 +94,11 @@ export default class OgResource extends OgQueryBuilder {
 
   async findOrFail(id) {
     if (!id) {
-      return this
+      throw new Error(
+        this.$config.locale.trans(
+          'The ID parameter is required to find or fail.'
+        )
+      )
     }
     this.$api.abort()
     this._statusReset()

@@ -30,4 +30,11 @@ export default class OgLocale {
     }
     return this.$i18n.te(key)
   }
+
+  get language() {
+    if (!this.$i18n) {
+      return 'en'
+    }
+    return this.$i18n.locale || 'en'
+  }
 }

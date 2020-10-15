@@ -62,10 +62,22 @@ export default class Bootstrap extends OgConfig {
     this.set('locale', new OgLocale(this, vue.i18n))
     this.set('router', vue.$router)
     this.set('app', vue)
+    // Defaults
+    this.set('DEFAULT_CURRENCY', 'DOP')
+    this.set('DEFAULT_COUNTRY', 'DO')
+    this.set('DEFAULT_LOCALE', 'es')
+  }
+
+  get country() {
+    return this.get('DEFAULT_COUNTRY')
+  }
+
+  get currency() {
+    return this.get('DEFAULT_CURRENCY')
   }
 
   get language() {
-    return 'es'
+    return this.locale.language
   }
 
   /**

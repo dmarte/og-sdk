@@ -21,6 +21,10 @@ export default class OgResourceCast {
     return this.$value
   }
 
+  set value(value) {
+    this.$value = value
+  }
+
   toJSON() {
     if (this.IS_STRING) {
       return this.toString()
