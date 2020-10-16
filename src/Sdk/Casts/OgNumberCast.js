@@ -5,33 +5,28 @@ export default class OgNumberCast extends OgResourceCast {
     super(bootstrap, value)
     this.$format = OgNumberCast.FORMAT_STANDARD
     this.$settings = {
-      locale: this.$config.language,
+      locale: 'en-US',
       currency: this.$config.currency,
-      currencyDisplay: 'symbol',
-      currencySign: 'standard',
+      currencyDisplay: 'code',
+      currencySign: 'accounting',
       notation: 'standard',
-      style: 'decimal',
+      style: 'currency',
       signDisplay: 'auto'
     }
   }
 
-  withShortFormat() {
-    this.$settings.currencyDisplay = 'narrowSymbol'
-    this.$settings.notation = 'compact'
+  // TODO: Prepare short format.
+  withFormatShort() {
     return this
   }
 
+  // TODO: Prepare standard format.
   withFormatStandard() {
-    this.$settings.currencySign = 'standard'
-    this.$settings.notation = 'standard'
-    this.$settings.signDisplay = 'auto'
     return this
   }
 
+  // TODO: Prepare special accounting format.
   withFormatAccounting() {
-    this.$settings.currencySign = 'accounting'
-    this.$settings.signDisplay = 'always'
-    this.$settings.style = 'currency'
     return this
   }
 
@@ -61,7 +56,7 @@ export default class OgNumberCast extends OgResourceCast {
         this.withFormatStandard()
         break
       case OgNumberCast.FORMAT_STANDARD_SHORT:
-        this.withShortFormat().withFormatStandard()
+        this.withFormatShort().withFormatStandard()
         break
     }
 

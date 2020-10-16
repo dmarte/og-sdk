@@ -85,6 +85,15 @@ export default class OgResource extends OgQueryBuilder {
     this.fill(attributes)
   }
 
+  /**
+   * @param {OgResource} resource
+   * @returns {OgResource}
+   */
+  merge(resource) {
+    this.fill(resource.toJSON())
+    return this
+  }
+
   clone(Resource) {
     if (Resource instanceof OgResource) {
       return new Resource.constructor(this.$api, this.toJSON())
@@ -100,7 +109,6 @@ export default class OgResource extends OgQueryBuilder {
         )
       )
     }
-    this.$api.abort()
     this._statusReset()
     this.$response.clear()
     this.$status.fetching = true
@@ -150,6 +158,29 @@ export default class OgResource extends OgQueryBuilder {
       throw new Error(this.$response.message)
     }
     this.fill(this.$response.data)
+    this._statusReset()
+    return this
+  }
+
+  /**
+   * This method allow to delete a given resource.
+   * @returns {Promise<OgResource>}
+   */
+  async delete() {
+    this.$api.abort()
+    this.$api.contentTypeJson()
+    this._statusReset()
+    this.$response.clear()
+    this.$status.deleting = true
+    const url = [this.$path, this.primaryKeyValue].join('/')
+    this.$response = await this.$api.post(this.getQueryString(url), {
+      ...this.toJSON(),
+      _method: 'DELETE'
+    })
+    if (this.$response.failed) {
+      this._statusReset()
+      throw new Error(this.$response.message)
+    }
     this._statusReset()
     return this
   }

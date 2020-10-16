@@ -64,6 +64,37 @@ export default class OgCollection extends OgQueryBuilder {
   }
 
   /**
+   * @param {OgResource} resource
+   * @returns {Promise<OgCollection>}
+   */
+  async deleteFromResource(resource) {
+    await resource.delete()
+    if (resource.$response.failed) {
+      throw new Error(resource.$response.message)
+    }
+    this.remove(resource)
+    return this
+  }
+
+  /**
+   * This option let you remove a resource from
+   * the given collection.
+   *
+   * @param {OgResource} item
+   * @returns {boolean}
+   */
+  remove(item) {
+    const index = this.$elements.findIndex(
+      ({ primaryKeyValue }) => primaryKeyValue === item.primaryKeyValue
+    )
+    if (index < 0) {
+      return false
+    }
+    this.$elements.splice(index, 1)
+    return true
+  }
+
+  /**
    * Get a { value, text } object from the list
    * useful to be used for dropdown or select forms.
    *
