@@ -8,9 +8,24 @@ export default class OgLocale {
     this.$i18n = i18n
   }
 
+  /**
+   * Parse placeholders.
+   *
+   * @param {String} value
+   * @param {Object} placeholders
+   * @returns {String}
+   * @private
+   */
+  _placeholders(value, placeholders = {}) {
+    Object.keys(placeholders).forEach((key) => {
+      value = value.replace(new RegExp(`{${key}}+`, 'gm'), placeholders[key])
+    })
+    return value
+  }
+
   trans(path, placeholders = {}, defaultValue = null) {
     if (!this.exists(path)) {
-      return defaultValue || path
+      return this._placeholders(defaultValue || path, placeholders)
     }
 
     return this.$i18n.t(path, placeholders)

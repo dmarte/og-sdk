@@ -36,8 +36,20 @@ export default class OgNumberCast extends OgResourceCast {
     )
   }
 
+  get value() {
+    return super.value || 0
+  }
+
+  set value(value) {
+    this.$value = parseFloat(value) || 0
+  }
+
   get settings() {
     return this.$format
+  }
+
+  toJSON() {
+    return this.value
   }
 
   set settings(format) {

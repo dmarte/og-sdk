@@ -1,5 +1,6 @@
 import { set, get, isObject, isFunction } from 'lodash'
 import OgQueryBuilder from '../Http/OgQueryBuilder'
+import OgCollection from '../Http/OgCollection'
 import OgResponse from '../Http/OgResponse'
 import OgResourceCast from './OgResourceCast'
 
@@ -28,6 +29,13 @@ const getCastValue = (api, key, casts = {}, value = null, settings) => {
     Object.prototype.isPrototypeOf.call(OgResource, Type)
   ) {
     return new Type(api, value)
+  }
+
+  if (
+    isFunction(Type) &&
+    Object.prototype.isPrototypeOf.call(OgCollection, Type)
+  ) {
+    return new Type(api).setItems(value)
   }
 
   let output
