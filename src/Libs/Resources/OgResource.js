@@ -35,7 +35,7 @@ const getCastValue = (api, key, casts = {}, value = null, settings) => {
     isFunction(Type) &&
     Object.prototype.isPrototypeOf.call(OgCollection, Type)
   ) {
-    return new Type(api).setItems(value)
+    return new Type(api).setItems(!Array.isArray(value) ? [] : value)
   }
 
   let output
@@ -132,7 +132,6 @@ export default class OgResource extends OgQueryBuilder {
   }
 
   async create() {
-    this.$api.abort()
     this.$api.contentTypeJson()
     this._statusReset()
     this.$response.clear()
@@ -151,7 +150,6 @@ export default class OgResource extends OgQueryBuilder {
   }
 
   async update() {
-    this.$api.abort()
     this.$api.contentTypeJson()
     this._statusReset()
     this.$response.clear()
@@ -175,7 +173,11 @@ export default class OgResource extends OgQueryBuilder {
    * @returns {Promise<OgResource>}
    */
   async delete() {
-    this.$api.abort()
+    if (!this.primaryKeyValue) {
+      throw new Error(
+        this.$config.locale.trans('No resource selected to delete.')
+      )
+    }
     this.$api.contentTypeJson()
     this._statusReset()
     this.$response.clear()
@@ -336,6 +338,9 @@ export default class OgResource extends OgQueryBuilder {
       if (value instanceof OgResourceCast || value instanceof OgResource) {
         value = value.toJSON()
       }
+      if (value instanceof OgCollection) {
+        value = value.toJsonItems()
+      }
       set(out, path, value)
     })
     return out
@@ -362,7 +367,7 @@ export default class OgResource extends OgQueryBuilder {
   }
 
   get IS_SAVING() {
-    return this.$status.creating || this.$status.updating || false
+    return this.IS_CREATING || this.IS_UPDATING || this.IS_DELETING || false
   }
 
   get IS_CREATING() {

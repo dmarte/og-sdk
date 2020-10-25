@@ -56,11 +56,28 @@ export default class OgCollection extends OgQueryBuilder {
   }
 
   /**
+   * @param {Number|String} value
+   * @returns {Promise<OgCollection>}
+   */
+  async deleteFromPrimaryKey(value) {
+    this.$loading = true
+    const resource = await this.findByPrimaryKey(value)
+    await resource.delete()
+    this.$loading = false
+    if (resource.$response.failed) {
+      throw new Error(resource.$response.message)
+    }
+    return this
+  }
+
+  /**
    * @param {OgResource} resource
    * @returns {Promise<OgCollection>}
    */
   async deleteFromResource(resource) {
+    this.$loading = true
     await resource.delete()
+    this.$loading = false
     if (resource.$response.failed) {
       throw new Error(resource.$response.message)
     }
@@ -136,6 +153,28 @@ export default class OgCollection extends OgQueryBuilder {
     }
     this.$loading = false
     return this
+  }
+
+  /**
+   * Save the collection of items.
+   *
+   * @returns {Promise<{success: [], failed: [], ok: boolean}>}
+   */
+  async save() {
+    this.$loading = true
+    const failed = []
+    const success = []
+    await this.items.forEach(async (item, index) => {
+      try {
+        await item.save()
+        success.push({ index })
+      } catch (ex) {
+        failed.push({ index, message: ex.message })
+      }
+    })
+    this.$loading = false
+
+    return { failed, success, ok: failed.length < 1 }
   }
 
   /**

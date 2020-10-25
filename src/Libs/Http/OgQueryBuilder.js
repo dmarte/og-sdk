@@ -14,6 +14,16 @@ export default class OgQueryBuilder {
   }
 
   /**
+   * Relations to be included in the query string.
+   * @param {String} value
+   * @returns {OgQueryBuilder}
+   */
+  with(value) {
+    this.where('with', value)
+    return this
+  }
+
+  /**
    * Reset the current query builder.
    * @returns {OgQueryBuilder}
    */

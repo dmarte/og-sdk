@@ -23,6 +23,14 @@ export default class OgLocale {
     return value
   }
 
+  /**
+   * Get a translation of a given key.
+   *
+   * @param {String} path
+   * @param {Object} placeholders
+   * @param {*} defaultValue
+   * @returns {String|*}
+   */
   trans(path, placeholders = {}, defaultValue = null) {
     if (!this.exists(path)) {
       return this._placeholders(defaultValue || path, placeholders)
